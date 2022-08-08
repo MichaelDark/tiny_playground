@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'imsea/imsea_search_page.dart';
+
 void main() {
   runApp(const TinyApp());
 }
@@ -14,19 +16,33 @@ class TinyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const ApartmentMapPage(),
+      home: const FeaturesPage(),
+      routes: {
+        '/imsea': (context) => const ImseaSearchPage(),
+      },
     );
   }
 }
 
-class ApartmentMapPage extends StatelessWidget {
-  const ApartmentMapPage({Key? key}) : super(key: key);
+class FeaturesPage extends StatelessWidget {
+  const FeaturesPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('All features'),
+      ),
       body: SafeArea(
-        child: Text('Hello'),
+        child: ListView(
+          children: [
+            ListTile(
+              title: const Text('Imsea'),
+              leading: const Icon(Icons.image_search),
+              onTap: () => Navigator.of(context).pushNamed('/imsea'),
+            ),
+          ],
+        ),
       ),
     );
   }
