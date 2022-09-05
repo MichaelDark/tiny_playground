@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'imsea/imsea_search_page.dart';
+import 'parking/parking_page.dart';
 
 void main() {
   runApp(const TinyApp());
@@ -19,6 +20,7 @@ class TinyApp extends StatelessWidget {
       home: const FeaturesPage(),
       routes: {
         '/imsea': (context) => const ImseaSearchPage(),
+        '/parking': (context) => const ParkingPage(),
       },
     );
   }
@@ -36,6 +38,11 @@ class FeaturesPage extends StatelessWidget {
       body: SafeArea(
         child: ListView(
           children: [
+            ListTile(
+              title: const Text('Parking'),
+              leading: const Icon(Icons.local_parking_rounded),
+              onTap: () => Navigator.of(context).pushNamed('/parking'),
+            ),
             ListTile(
               title: const Text('Imsea'),
               leading: const Icon(Icons.image_search),
