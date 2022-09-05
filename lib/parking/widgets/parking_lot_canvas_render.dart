@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../models/parking_lot.dart';
-import '../../models/region.dart';
-import '../../models/region_type.dart';
+import '../models/parking_lot.dart';
+import '../models/region.dart';
+import '../models/region_type.dart';
 
 class ParkingLotCanvasRender extends StatelessWidget {
   final ParkingLot parkingLot;
@@ -11,10 +11,12 @@ class ParkingLotCanvasRender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: parkingLot.width / parkingLot.height,
-      child: CustomPaint(
-        painter: ParkingPainter(parkingLot),
+    return Center(
+      child: AspectRatio(
+        aspectRatio: parkingLot.width / parkingLot.height,
+        child: CustomPaint(
+          painter: ParkingPainter(parkingLot),
+        ),
       ),
     );
   }
