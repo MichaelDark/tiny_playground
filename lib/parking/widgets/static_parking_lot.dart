@@ -4,28 +4,26 @@ import '../models/parking_lot.dart';
 import '../models/region.dart';
 import '../models/region_type.dart';
 
-class ParkingLotCanvasRender extends StatelessWidget {
+class StaticParkingLot extends StatelessWidget {
   final ParkingLot parkingLot;
 
-  const ParkingLotCanvasRender({required this.parkingLot, super.key});
+  const StaticParkingLot(this.parkingLot, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: AspectRatio(
-        aspectRatio: parkingLot.width / parkingLot.height,
-        child: CustomPaint(
-          painter: ParkingPainter(parkingLot),
-        ),
+    return AspectRatio(
+      aspectRatio: parkingLot.width / parkingLot.height,
+      child: CustomPaint(
+        painter: ParkingPainter(parkingLot),
       ),
     );
   }
 }
 
 class ParkingPainter extends CustomPainter {
-  final ParkingLot parking;
+  final ParkingLot parkingLot;
 
-  ParkingPainter(this.parking);
+  ParkingPainter(this.parkingLot);
 
   final dirtPaint = Paint()..color = Colors.brown[400]!;
   final roadPaint = Paint()..color = Colors.grey[400]!;
@@ -39,12 +37,12 @@ class ParkingPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final xSize = size.width / parking.width;
-    final ySize = size.height / parking.height;
+    final xSize = size.width / parkingLot.width;
+    final ySize = size.height / parkingLot.height;
 
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), dirtPaint);
 
-    for (final area in parking.regions) {
+    for (final area in parkingLot.regions) {
       final topX = area.x * xSize;
       final topY = area.y * ySize;
       final width = area.width * xSize;
@@ -89,5 +87,5 @@ class ParkingPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) =>
-      oldDelegate is ParkingPainter && parking != oldDelegate.parking;
+      oldDelegate is ParkingPainter && parkingLot != oldDelegate.parkingLot;
 }
