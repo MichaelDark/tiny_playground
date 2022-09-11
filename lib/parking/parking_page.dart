@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:tiny_playground/parking/utils/parking_lots.dart';
 import 'package:tiny_playground/parking/widgets/dynamic_parking_lot.dart';
 
-import 'models/parking_lot.dart';
-import 'utils/parking_lot_model_1.dart';
+import 'models/models.dart';
 import 'utils/parking_lot_parser.dart';
 
+// https://docs.flutter.dev/codelabs/explicit-animations
+// https://blog.logrocket.com/understanding-offsets-flutter/
+// https://stackoverflow.com/a/60205853
 class ParkingPage extends StatefulWidget {
   const ParkingPage({Key? key}) : super(key: key);
 
@@ -13,11 +16,19 @@ class ParkingPage extends StatefulWidget {
 }
 
 class _ParkingPageState extends State<ParkingPage> {
-  ParkingLot parkingLot = ParkingLot(width: 16, height: 16);
+  late ParkingLot parkingLot;
 
-  void _updateCells() {
+  @override
+  void initState() {
+    super.initState();
+    parkingLot = ParkingParser().parse(staticParkingLotJson);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     setState(() {
-      parkingLot = ParkingParser().parse(parkingLotModel1);
+      parkingLot = ParkingParser().parse(staticParkingLotJson);
     });
   }
 
@@ -28,11 +39,14 @@ class _ParkingPageState extends State<ParkingPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            IconButton(
-              onPressed: _updateCells,
-              icon: const Icon(Icons.update),
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.update),
+                ),
+              ],
             ),
-            const SizedBox(height: 10),
             Expanded(
               child: InteractiveViewer(
                 minScale: 0.5,

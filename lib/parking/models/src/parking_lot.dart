@@ -1,12 +1,7 @@
 import 'package:flutter/foundation.dart' show listEquals;
 
+import 'parking_cell.dart';
 import 'region.dart';
-
-class ParkingCell {
-  Region? region;
-
-  ParkingCell({this.region});
-}
 
 class ParkingLot {
   final int width;
@@ -24,7 +19,7 @@ class ParkingLot {
 
   int getCellCount() => width * height;
 
-  void addRegion(Region region) {
+  void addParkingRegion(Region region) {
     assert(region.x >= 0 && region.x + region.width <= width);
     assert(region.y >= 0 && region.y + region.height <= height);
 

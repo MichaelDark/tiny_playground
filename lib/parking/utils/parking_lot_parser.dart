@@ -1,8 +1,7 @@
 import 'dart:convert';
+import 'dart:math';
 
-import '../models/parking_lot.dart';
-import '../models/region.dart';
-import '../models/region_type.dart';
+import '../models/models.dart';
 
 class ParkingParser {
   ParkingParser();
@@ -18,16 +17,22 @@ class ParkingParser {
     final objects = (json["objects"] as List).cast<Map<String, dynamic>>();
 
     for (final object in objects) {
-      final RegionType type;
+      final RegionSpecification type;
       switch (object["payload"]["type"]) {
         case 'road':
-          type = const StaticRegion.road();
+          final List directions = object["payload"]["directions"];
+          type = RoadRegionSpec.fromVectors(
+            directions
+                .cast<List>()
+                .map((e) => Point<num>(e.first, e.last))
+                .toList(),
+          );
           break;
         case 'barrier':
-          type = const StaticRegion.barrier();
+          type = const StaticRegionSpec.barrier();
           break;
         case 'park':
-          type = ParkPlaceRegion(
+          type = ParkPlaceRegionSpec(
             code: object["payload"]["code"],
             busy: object["payload"]["busy"],
           );
@@ -36,13 +41,13 @@ class ParkingParser {
           continue;
       }
 
-      parking.addRegion(
+      parking.addParkingRegion(
         Region.named(
           x: object["x"],
           y: object["y"],
           width: object["width"],
           height: object["height"],
-          type: type,
+          spec: type,
         ),
       );
     }

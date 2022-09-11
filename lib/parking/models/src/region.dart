@@ -1,20 +1,20 @@
-import 'region_type.dart';
+import 'region_specs/region_specification.dart';
 
 class Region {
   final int x;
   final int y;
   final int width;
   final int height;
-  final RegionType type;
+  final RegionSpecification spec;
 
-  const Region(this.x, this.y, this.width, this.height, this.type);
+  const Region(this.x, this.y, this.width, this.height, this.spec);
 
   const Region.named({
     required this.x,
     required this.y,
     required this.width,
     required this.height,
-    required this.type,
+    required this.spec,
   });
 
   @override
@@ -26,7 +26,7 @@ class Region {
         other.y == y &&
         other.width == width &&
         other.height == height &&
-        other.type == type;
+        other.spec == spec;
   }
 
   @override
@@ -35,6 +35,6 @@ class Region {
         y.hashCode ^
         width.hashCode ^
         height.hashCode ^
-        type.hashCode;
+        spec.hashCode;
   }
 }

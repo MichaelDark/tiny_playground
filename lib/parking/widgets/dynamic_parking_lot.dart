@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../models/parking_lot.dart';
-import '../models/region.dart';
-import '../models/region_type.dart';
+import '../models/models.dart';
+import 'canvas_theme.dart';
+import 'parking_painter.dart';
 
 class DynamicParkingLot extends StatefulWidget {
   final ParkingLot parkingLot;
@@ -13,9 +13,29 @@ class DynamicParkingLot extends StatefulWidget {
   State<DynamicParkingLot> createState() => _DynamicParkingLotState();
 }
 
-class _DynamicParkingLotState extends State<DynamicParkingLot> {
+class _DynamicParkingLotState extends State<DynamicParkingLot>
+    with SingleTickerProviderStateMixin {
   Offset? tappedDown;
-  Offset? clicked;
+  Offset? currentTargetPosition = Offset.zero;
+  Offset lastPosition = Offset.zero;
+
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 3000),
+    );
+    super.initState();
+    // _animation = Tween(begin: 0.0, end: 1.0).animate(_controller);
+    _animation =
+        CurvedAnimation(parent: _controller, curve: Curves.easeInOutQuint);
+    // _animation = CurvedAnimation(parent: _controller, curve: Curves.bounceOut);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,89 +48,84 @@ class _DynamicParkingLotState extends State<DynamicParkingLot> {
         onTapUp: (details) {
           final distance = (tappedDown! - details.localPosition).distance;
           if (distance < 5) {
-            setState(() => clicked = tappedDown);
+            setState(() {
+              lastPosition = Offset.lerp(
+                lastPosition,
+                currentTargetPosition,
+                _animation.value,
+              )!;
+              currentTargetPosition = tappedDown;
+              _controller.reset();
+              _controller.forward();
+            });
           }
         },
-        child: CustomPaint(
-          painter: ParkingPainter(widget.parkingLot, tappedDown),
+        child: AnimatedProgressWidget(
+          controller: _animation,
+          builder: (_, value, child) {
+            return CustomPaint(
+              foregroundPainter: MovingTargetPainter(
+                startPosition: lastPosition,
+                targetPosition: currentTargetPosition,
+                value: value,
+              ),
+              child: child,
+            );
+          },
+          child: RepaintBoundary(
+            child: CustomPaint(
+              painter: ParkingPainter(widget.parkingLot),
+            ),
+          ),
         ),
       ),
     );
   }
 }
 
-class ParkingPainter extends CustomPainter {
-  final ParkingLot parking;
-  final Offset? clicked;
+class AnimatedProgressWidget extends AnimatedWidget {
+  final Widget Function(BuildContext, double progress, Widget? child) builder;
+  final Widget? child;
 
-  ParkingPainter(this.parking, this.clicked);
+  const AnimatedProgressWidget({
+    super.key,
+    required Listenable controller,
+    required this.builder,
+    this.child,
+  }) : super(listenable: controller);
 
-  final dirtPaint = Paint()..color = Colors.brown[400]!;
-  final roadPaint = Paint()..color = Colors.grey[400]!;
-  final barrierPaint = Paint()..color = Colors.grey[800]!;
-  final busyParkPlacePaint = Paint()..color = Colors.blue[900]!;
-  final freeParkPlacePaint = Paint()..color = Colors.blue[600]!;
-  final parkPlaceBorderPaint = Paint()
-    ..color = Colors.grey[600]!
-    ..style = PaintingStyle.stroke
-    ..strokeWidth = 1;
+  Animation<double> get _progress => listenable as Animation<double>;
+
+  @override
+  Widget build(BuildContext context) =>
+      builder(context, _progress.value, child);
+}
+
+class MovingTargetPainter extends CustomPainter {
+  final Offset startPosition;
+  final Offset? targetPosition;
+  final double value;
+
+  MovingTargetPainter({
+    required this.startPosition,
+    required this.targetPosition,
+    required this.value,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
-    final xSize = size.width / parking.width;
-    final ySize = size.height / parking.height;
+    if (targetPosition == null) return;
+    canvas.drawCircle(targetPosition!, 5, CanvasTheme().targetPositionPaint);
 
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), dirtPaint);
-
-    for (final area in parking.regions) {
-      final topX = area.x * xSize;
-      final topY = area.y * ySize;
-      final width = area.width * xSize;
-      final height = area.height * ySize;
-      final rect = Rect.fromLTWH(topX, topY, width, height);
-
-      _drawArea(canvas, rect, area);
-    }
-
-    if (clicked != null) {
-      canvas.drawCircle(clicked!, 5, dirtPaint);
-    }
-  }
-
-  void _drawArea(Canvas canvas, Rect rect, Region region) {
-    switch (region.type.terrain) {
-      case Terrain.barrier:
-        canvas.drawRect(rect, barrierPaint);
-        break;
-      case Terrain.road:
-        canvas.drawRect(rect, roadPaint);
-        break;
-      case Terrain.parkPlace:
-        final parkPlace = region.type as ParkPlaceRegion;
-        final paint = parkPlace.busy ? busyParkPlacePaint : freeParkPlacePaint;
-        canvas.drawRect(rect, paint);
-        canvas.drawRect(rect, parkPlaceBorderPaint);
-
-        final painter = TextPainter(
-          text: TextSpan(
-            text: parkPlace.code,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-              decoration: parkPlace.busy ? TextDecoration.lineThrough : null,
-            ),
-          ),
-          textDirection: TextDirection.ltr,
-        );
-        painter.layout(minWidth: 0, maxWidth: rect.width);
-        final halfTextOffset = Offset(painter.width / 2, painter.height / 2);
-        painter.paint(canvas, rect.center - halfTextOffset);
-        break;
-    }
+    final currentOffset = Offset.lerp(startPosition, targetPosition, value);
+    if (currentOffset == null) return;
+    canvas.drawCircle(currentOffset, 5, CanvasTheme().currentPositionPaint);
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) =>
-      oldDelegate is ParkingPainter &&
-      (parking != oldDelegate.parking || clicked != oldDelegate.clicked);
+      oldDelegate is MovingTargetPainter &&
+      (startPosition != oldDelegate.startPosition ||
+          targetPosition != oldDelegate.targetPosition ||
+          value != oldDelegate.value);
 }
