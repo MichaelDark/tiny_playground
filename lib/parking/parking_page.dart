@@ -35,25 +35,40 @@ class _ParkingPageState extends State<ParkingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          Builder(
+            builder: (context) {
+              return IconButton(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Parking lot has size ${parkingLot.width}x${parkingLot.height}',
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.info),
+              );
+            },
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.update),
-                ),
-              ],
-            ),
             Expanded(
               child: InteractiveViewer(
                 minScale: 0.5,
                 maxScale: 5,
                 child: Center(
-                  child: DynamicParkingLot(
-                    parkingLot: parkingLot,
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: DynamicParkingLot(
+                      parkingLot: parkingLot,
+                    ),
                   ),
                 ),
               ),
