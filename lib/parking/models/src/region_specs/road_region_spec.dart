@@ -7,8 +7,7 @@ import 'region_specification.dart';
 class RoadRegionSpec extends RegionSpecification {
   final List<Point> directions;
 
-  RoadRegionSpec(RoadDirection direction)
-      : directions = direction.oneDirectionVectors;
+  RoadRegionSpec(RoadDirection direction) : directions = direction.vectors;
 
   RoadRegionSpec.all()
       : directions = [...RoadDirection.values.map((d) => d.vector)];
@@ -46,9 +45,15 @@ enum RoadDirection {
 
   const RoadDirection(this.vector);
 
-  List<Point> get oneDirectionVectors {
-    // return [vector];
+  List<Point> get vectors {
+    return _oneDirectionVectors;
+    // ignore: dead_code
+    return _oneDirectionVectorsExcludingBack;
+  }
 
+  List<Point> get _oneDirectionVectors => [vector];
+
+  List<Point> get _oneDirectionVectorsExcludingBack {
     final oddIndexes = [
       (index + 8 + 4).abs() % 8,
       (index + 8 + 3).abs() % 8,

@@ -33,7 +33,8 @@ class _DynamicParkingLotState extends State<DynamicParkingLot>
     super.initState();
     // _animation = Tween(begin: 0.0, end: 1.0).animate(_controller);
     _animation =
-        CurvedAnimation(parent: _controller, curve: Curves.easeInOutQuint);
+        CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic);
+    // CurvedAnimation(parent: _controller, curve: Curves.easeInOutQuint);
     // _animation = CurvedAnimation(parent: _controller, curve: Curves.bounceOut);
   }
 
