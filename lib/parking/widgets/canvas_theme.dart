@@ -5,7 +5,8 @@ class CanvasTheme {
   CanvasTheme._();
   factory CanvasTheme() => _instance;
 
-  final currentPositionPaint = Paint()..color = Colors.red[300]!;
+  final currentPositionPaint = Paint()..color = Colors.green[300]!;
+  final currentPositionBlockedPaint = Paint()..color = Colors.red[200]!;
   final targetPositionPaint = Paint()..color = Colors.red[400]!;
 
   final dirtPaint = Paint()..color = Colors.brown[300]!;

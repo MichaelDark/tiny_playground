@@ -46,14 +46,14 @@ enum RoadDirection {
   const RoadDirection(this.vector);
 
   List<Point> get vectors {
-    return _oneDirectionVectors;
-    // ignore: dead_code
-    return _oneDirectionVectorsExcludingBack;
+    final calculatedVectors = oneDirectionVectors;
+    // final calculatedVectors = oneDirectionVectorsExcludingBack;
+    return calculatedVectors;
   }
 
-  List<Point> get _oneDirectionVectors => [vector];
+  List<Point> get oneDirectionVectors => [vector];
 
-  List<Point> get _oneDirectionVectorsExcludingBack {
+  List<Point> get oneDirectionVectorsExcludingBack {
     final oddIndexes = [
       (index + 8 + 4).abs() % 8,
       (index + 8 + 3).abs() % 8,

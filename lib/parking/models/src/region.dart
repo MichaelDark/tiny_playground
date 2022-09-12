@@ -1,11 +1,11 @@
 import 'region_specs/region_specification.dart';
 
-class Region {
+class Region<T extends RegionSpecification> {
   final int x;
   final int y;
   final int width;
   final int height;
-  final RegionSpecification spec;
+  final T spec;
 
   const Region(this.x, this.y, this.width, this.height, this.spec);
 
@@ -17,11 +17,15 @@ class Region {
     required this.spec,
   });
 
+  Region<RegionSpecType> cast<RegionSpecType extends RegionSpecification>() {
+    return Region<RegionSpecType>(x, y, width, height, spec as RegionSpecType);
+  }
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is Region &&
+    return other is Region<T> &&
         other.x == x &&
         other.y == y &&
         other.width == width &&
